@@ -7,6 +7,7 @@
     <body>
         <?php
         // put your code here
+        echo "<h1>hello cosji.com!<h1> <br/>";
         ?>
     </body>
 </html>
