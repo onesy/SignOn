@@ -1,6 +1,6 @@
 <?php
 
-class CJFrameworkDB {
+final class CJFrameworkDB {
 
     /**
      * single instance
@@ -93,6 +93,10 @@ class CJFrameworkDB {
         return $result;
     }
     
+    /**
+     * TODO this method is not complate now
+     * @param type $arguments
+     */
     public function SimpleQuery($arguments){
         
     }
