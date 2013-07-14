@@ -8,6 +8,9 @@ include 'CJFrameworkModule.php';
 include 'CJFrameworkModel.php';
 include 'CJFrameworkCollection.php';
 
+        const PAGE_SUFFIX = '.tpl.php';
+        const PAGE_PLUGIN_SUFFIX = '.plugin.php';
+
         const CTRLR_PREFIX = 'Controller_';
         const MODULE_PREFIX = 'Module_';
         const MODEL_PREFIX = 'Model_';
@@ -38,4 +41,161 @@ function __autoload($classname) {
         include_once APP_ROOT . DIRECTORY_SEPARATOR . "Collection" .
                 DIRECTORY_SEPARATOR . $classRealName . '.class.php';
     }
+}
+
+/**
+ * Analyze the server info 
+ */
+$site_info = array();
+global $site_info;
+
+$site_info['_rp_'] = str_replace(".html", "", $_REQUEST['_rp_']);
+$site_info['REST'] = array(array_filter(split("/", $site_info['_rp_'])));
+
+$site_info['REQUEST_METHOD'] = $_SERVER['REQUEST_METHOD'];
+$site_info['REMOTE_ADDR'] = $_SERVER['REMOTE_ADDR'];
+$site_info['HTTP_HOST'] = $_SERVER['HTTP_HOST'];
+var_dump($site_info);
+
+/**
+ * this is the site engine class,the index.php file will instance this class
+ * and invoke the method go,from now on the ob_start,and analyze the controller
+ * ,then activation the controller
+ */
+class CJFramework_Site_Engine {
+
+    protected static $siteEngine = null;
+    
+    protected static $siteParams = array();
+    
+    protected static $ViewName = '';
+    
+    public static $paramsPassenger = array();
+
+    private function __construct() {
+        ;
+    }
+
+    private function __clone() {
+        ;
+    }
+
+    public function __set($name, $value) {
+        self::$siteParams[$name] = $value;
+    }
+
+    public function __get($name) {
+        return self::$siteEngine[$name];
+    }
+
+    public static function Instance() {
+        if (self::$siteEngine == null) {
+            self::$siteEngine = new static();
+        }
+        return self::$siteEngine;
+    }
+    
+    public function setViewName($viewName){
+        self::$ViewName = $viewName;
+    }
+
+    /**
+     * please do not use numeric key!
+     * @param type $params
+     * @return type
+     */
+    public function setEngine($params) {
+        if (!is_array($params) || empty($params))
+            return;
+        else {
+            foreach ($params as $k => $v) {
+                if (is_numeric($k))
+                    continue;
+                self::$siteEngine->$k = $v;
+            }
+        }
+    }
+
+    public function run($site_info) {
+        $controller = self::getClassName($site_info['REST'][1], CTRLR_PREFIX);
+        $action = self::getClassName($site_info['REST'][2], CTRLR_PREFIX);
+        
+        //from now on ,the echo and any print out will be store in buffer 
+        ob_start();
+        /**
+         * invoke the controller and view are here
+         */
+        $controller->$action();
+        /**
+         * TODO http request respon hearder is not slove.
+         */
+        
+        /**
+         * spelling the html page
+         */
+        include_once VIEWS_ROOT . DIRECTORY_SEPARATOR . self::getPageTplName(self::$ViewName);
+        
+        /**
+         * flush content in buffer and close the buffer.
+         */
+        ob_end_flush();
+    }
+
+    public static function getClassName($ctrlr_name, $prefix = CTRLR_PREFIX) {
+        return $prefix . $ctrlr_name;
+    }
+    
+    public static function getPageTplName($ctrlr_name){
+        return $ctrlr_name . PAGE_SUFFIX;
+    }
+    
+    public static function getPagePluginName($ctrlr_name){
+        return $ctrlr_name . PAGE_PLUGIN_SUFFIX;
+    }
+
+}
+
+class CJFramework_ReqRsP{
+    
+    public static function CJGetGetInt($name){
+        if(!is_numeric($_GET[$name])){
+            return false;
+        }
+        return (int)$_GET[$name];
+    }
+    
+    public static function CJGetGetVar($name){
+        return $_GET[$name];
+    }
+    
+    public static function CJGetPostInt($name){
+        if(!is_numeric($_POST[$name])){
+            return false;
+        }
+        return (int)$_POST[$name];
+    }
+    
+    public static function CJGetPostVar($name){
+        return $_POST[$name];
+    }
+    
+    public static function CJGetCookieInt($name){
+        if(!is_numeric($_COOKIE[$name])){
+            return false;
+        }
+        return (int)$_COOKIE[$name];
+    }
+    
+    public static function CJGetCookieVar($name){
+        return $_COOKIE[$name];
+    }
+    
+    public static function CJSetCookieVar($name, $value, $expire, $path=null, $domain = DOMAIN){
+        
+        if($expire ==0 || $expire == null)
+            throw new Exception ('set cookie operation, null $expire is not allowed!');
+        setcookie($name, $value, $expire, $path, $domain);
+        
+    }
+    
 }
