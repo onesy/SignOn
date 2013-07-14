@@ -6,7 +6,7 @@
 //echo ' this is  CJFrameworkWeb.php<br/>';
 class CJFrameworkWeb{
     
-    private static $instance = null;
+    protected static $instance = null;
 
     protected $WebVarStore = array();
     
@@ -35,5 +35,11 @@ class CJFrameworkWeb{
             self::$instance = new static();
         }
         return self::$instance;
+    }
+    
+    public function Rendering(){
+        /**
+         * page rendering
+         */
     }
 }
