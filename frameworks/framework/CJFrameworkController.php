@@ -1,5 +1,5 @@
 <?php
-class CJFrameworkController{
+abstract class CJFrameworkController{
     
     protected static $instance = null;
     

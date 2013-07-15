@@ -8,7 +8,7 @@ class CJFrameworkWeb{
     
     protected static $instance = null;
 
-    protected $WebVarStore = array();
+    protected static $WebVarStore = array();
     
     public function __set($name, $value) {
         if($name == null)
@@ -20,6 +20,25 @@ class CJFrameworkWeb{
         if($name == null)
             throw new Exception('params invalid');
         return $this->WebVarStore[$name];
+    }
+    
+    public static function RelaceStore($store)
+    {
+        if(!is_array($store)){
+            return ;
+        }
+        self::$WebVarStore = $store;
+    }
+    
+    public static function AppendStore($store){
+        if(!is_array($store)){
+            return ;
+        }
+        self::$WebVarStore = array_merge(self::$WebVarStore, $store);
+    }
+    
+    public static function GetStore(){
+        return self::$WebVarStore;
     }
     
     private function __construct() {

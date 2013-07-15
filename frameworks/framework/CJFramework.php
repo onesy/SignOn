@@ -9,6 +9,21 @@ include 'CJFrameworkModel.php';
 include 'CJFrameworkCollection.php';
 include 'CJFrameworkPluginLoader.php';
 
+        /**
+         * http header spell
+         */
+        const HTTP_TXT_HTML_UTF8_HEAD = 'Content-Type:text/html;charset=utf-8 ';
+        const HTTP_APP_JSON_HEAD = 'Content-type: application/json';
+        const HTTP_TXT_CSS_HEAD = 'Content-type: text/css';
+        const HTTP_TXT_JS_HEAD = 'Content-type: text/javascript';
+        const HTTP_TXT_PLAIN_HEAD = 'Content-type: text/plain';
+        const HTTP_TXT_XML_HEAD = 'Content-type: text/xml';
+        const HTPP_OK_HEAD = 'HTTP/1.1 200 OK';
+        const HTTP_PAGE_NOT_FOUND = 'HTTP/1.1 404 Not Found';
+
+        /**
+         * tpl and page plugin file and suffix
+         */
         const PAGE_SUFFIX = '.tpl.php';
         const PAGE_PLUGIN_SUFFIX = '.plugin.php';
 
@@ -33,15 +48,15 @@ function __autoload($classname) {
                 DIRECTORY_SEPARATOR . $classRealName . '.class.php';
     } else if (strpos($classname, MODULE_PREFIX) !== false) {
         $classRealName = str_replace(MODULE_PREFIX, "", $classname);
-        include_once APP_ROOT . DIRECTORY_SEPARATOR . "Module" .
+        include_once COMMONS_ROOT . DIRECTORY_SEPARATOR . "Module" .
                 DIRECTORY_SEPARATOR . $classRealName . '.class.php';
     } else if (strpos($classname, MODEL_PREFIX) !== false) {
         $classRealName = str_replace(MODEL_PREFIX, "", $classname);
-        include_once APP_ROOT . DIRECTORY_SEPARATOR . "Model" .
+        include_once COMMONS_ROOT . DIRECTORY_SEPARATOR . "Model" .
                 DIRECTORY_SEPARATOR . $classRealName . '.class.php';
     } else if (strpos($classname, CLCT_PREFIX) !== false) {
         $classRealName = str_replace(CLCT_PREFIX, "", $classname);
-        include_once APP_ROOT . DIRECTORY_SEPARATOR . "Collection" .
+        include_once COMMONS_ROOT . DIRECTORY_SEPARATOR . "Collection" .
                 DIRECTORY_SEPARATOR . $classRealName . '.class.php';
     }
 }
@@ -74,6 +89,8 @@ class CJFramework_Site_Engine {
     protected static $ViewName = '';
     
     public static $paramsPassenger = array();
+    
+    private static $site_info = null;
 
     private function __construct() {
         ;
@@ -98,7 +115,10 @@ class CJFramework_Site_Engine {
         return self::$siteEngine;
     }
     
-    public function setViewName($viewName){
+    public function setViewName($viewName = null){
+        if($viewName == null){
+            $viewName = $site_info['REST'][0][2];
+        }
         self::$ViewName = $viewName;
     }
 
@@ -120,6 +140,7 @@ class CJFramework_Site_Engine {
     }
 
     public function run($site_info) {
+        self::$site_info = $site_info;
         $controller = self::getClassName($site_info['REST'][0][1], CTRLR_PREFIX);
         $action = self::getClassName($site_info['REST'][0][2],ACTION_PREFFIX);
         
@@ -128,6 +149,7 @@ class CJFramework_Site_Engine {
         /**
          * invoke the controller and view are here
          */
+        header('Content-Type:text/html;charset=utf-8 ');
         $controller_instance = $controller::Instance();
         $controller_instance->$action();
         /**
@@ -149,8 +171,11 @@ class CJFramework_Site_Engine {
         return $prefix . $ctrlr_name;
     }
     
-    public static function getPageTplName($ctrlr_name){
-        return $ctrlr_name . PAGE_SUFFIX;
+    public static function getPageTplName($page_name){
+        if($page_name == null){
+            $page_name = self::$site_info['REST'][0][2];
+        }
+        return $page_name . PAGE_SUFFIX;
     }
     
     public static function getPagePluginName($ctrlr_name){

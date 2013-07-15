@@ -20,4 +20,9 @@ class CJFrameworkCollection {
         }
         return CJFrameworkCollection::$instance;
     }
+    
+    public static function getDB(){
+        self::instance();
+        return self::$db;
+    }
 }

@@ -8,7 +8,7 @@ class CJPluginLoader {
     }
     
     public static function CFPagePluginRegister($page_plugin_name){
-        
+        include PAGE_PLUGIN_ROOT . DIRECTORY_SEPARATOR  . $page_plugin_name .'.plugin.php';
     }
     
 }

@@ -12,29 +12,41 @@ final class CJFrameworkDB {
     
     static private $slave = null;
     
+    static private $server_cfg = null;
+    
     private $masterOrSlave = -1;
     
     private $sqlArray = array();
     
     private $sql = '';
 
+    public static function setServer_cfg($server_cfg){
+        self::$server_cfg = $server_cfg;
+    }
+    
     private function __construct() {
         self::$master = new PDO(
-                MYSQL . ":host=" . $server_cfg['database']['master']['host'] 
-                . ";port=" . $server_cfg['database']['master']['port'] 
-                . ";dbname=" . $server_cfg['database']['master']['db'] . ";"
-                , $server_cfg['database']['master']['db']
-                , $server_cfg['database']['master']['password'], array(
+                MYSQL . ":host=" . self::$server_cfg['database']['master']['host'] 
+                . ";port=" . self::$server_cfg['database']['master']['port'] 
+                . ";dbname=" . self::$server_cfg['database']['master']['db'] . ";"
+                , self::$server_cfg['database']['master']['username']
+                , self::$server_cfg['database']['master']['password'], array(
             PDO::ATTR_PERSISTENT => true,
         ));
         self::$slave = new PDO(
-                MYSQL . ":host=" . $server_cfg['database']['slave']['host'] 
-                . ";port=" . $server_cfg['database']['master']['port'] 
-                . ";dbname=" . $server_cfg['database']['master']['db'] . ";"
-                , $server_cfg['database']['master']['db']
-                , $server_cfg['database']['master']['password'], array(
+                MYSQL . ":host=" . self::$server_cfg['database']['slave']['host'] 
+                . ";port=" . self::$server_cfg['database']['master']['port'] 
+                . ";dbname=" . self::$server_cfg['database']['master']['db'] . ";"
+                , self::$server_cfg['database']['master']['username']
+                , self::$server_cfg['database']['master']['password'], array(
             PDO::ATTR_PERSISTENT => true,
         ));
+        if(!self::$master){
+            throw new Exception('master connection failed!');
+        }
+        if(!self::$slave){
+            throw new Exception('slave connetion failed!');
+        }
     }
 
     private function __clone() {
@@ -91,6 +103,23 @@ final class CJFrameworkDB {
         $result = $dbConn->exec($sql);
         
         return $result;
+    }
+    
+    public function query($sql){
+        $dbConn = null;
+        if(is_null($sql) || $this->masterOrSlave == -1){
+           return null; 
+        }
+        if($this->masterOrSlave == 0)
+        {
+            $dbConn = self::$master;
+        }
+        else {
+            $dbConn = self::$slave;
+        }
+        $result = $dbConn->query($sql);
+        $rows = $result->fetch();
+        return $rows;
     }
     
     /**
