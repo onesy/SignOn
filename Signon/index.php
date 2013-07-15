@@ -21,4 +21,4 @@ $siteEngine = CJFramework_Site_Engine::Instance();
 $siteEngine->setEngine($site_info);
 $siteEngine->run($site_info);
 
-var_dump($_SERVER);
+//var_dump($_SERVER);
