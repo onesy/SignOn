@@ -2,15 +2,18 @@
 
 //echo 'load CJFramework';
 include 'CJFrameworkDB.php';
-include 'CJFarmeworkWeb.php';
+include 'CJFrameworkWeb.php';
 include 'CJFrameworkController.php';
 include 'CJFrameworkModule.php';
 include 'CJFrameworkModel.php';
 include 'CJFrameworkCollection.php';
+include 'CJFrameworkPluginLoader.php';
 
         const PAGE_SUFFIX = '.tpl.php';
         const PAGE_PLUGIN_SUFFIX = '.plugin.php';
 
+        const ACTION_PREFFIX = 'action_';
+        const AJAX_PREFFIX = 'ajax_';
         const CTRLR_PREFIX = 'Controller_';
         const MODULE_PREFIX = 'Module_';
         const MODEL_PREFIX = 'Model_';
@@ -24,19 +27,19 @@ function __autoload($classname) {
      * model`s class name is Model_classname filename = classname.class.php
      * collection`s class name is Collection_classanme file name = classname.class.php
      */
-    if (strpos($classname, CTRLR_PREFIX) === false) {
+    if (strpos($classname, CTRLR_PREFIX) !== false) {
         $classRealName = str_replace(CTRLR_PREFIX, "", $classname);
         include_once APP_ROOT . DIRECTORY_SEPARATOR . "Controller" .
                 DIRECTORY_SEPARATOR . $classRealName . '.class.php';
-    } else if (strpos($classname, MODULE_PREFIX) === false) {
+    } else if (strpos($classname, MODULE_PREFIX) !== false) {
         $classRealName = str_replace(MODULE_PREFIX, "", $classname);
         include_once APP_ROOT . DIRECTORY_SEPARATOR . "Module" .
                 DIRECTORY_SEPARATOR . $classRealName . '.class.php';
-    } else if (strpos($classname, MODEL_PREFIX) === false) {
+    } else if (strpos($classname, MODEL_PREFIX) !== false) {
         $classRealName = str_replace(MODEL_PREFIX, "", $classname);
         include_once APP_ROOT . DIRECTORY_SEPARATOR . "Model" .
                 DIRECTORY_SEPARATOR . $classRealName . '.class.php';
-    } else if (strpos($classname, CLCT_PREFIX) === false) {
+    } else if (strpos($classname, CLCT_PREFIX) !== false) {
         $classRealName = str_replace(CLCT_PREFIX, "", $classname);
         include_once APP_ROOT . DIRECTORY_SEPARATOR . "Collection" .
                 DIRECTORY_SEPARATOR . $classRealName . '.class.php';
@@ -50,12 +53,12 @@ $site_info = array();
 global $site_info;
 
 $site_info['_rp_'] = str_replace(".html", "", $_REQUEST['_rp_']);
-$site_info['REST'] = array(array_filter(split("/", $site_info['_rp_'])));
+$site_info['REST'] = array(array_filter(explode("/", $site_info['_rp_'])));
 
 $site_info['REQUEST_METHOD'] = $_SERVER['REQUEST_METHOD'];
 $site_info['REMOTE_ADDR'] = $_SERVER['REMOTE_ADDR'];
 $site_info['HTTP_HOST'] = $_SERVER['HTTP_HOST'];
-var_dump($site_info);
+//var_dump($site_info);
 
 /**
  * this is the site engine class,the index.php file will instance this class
@@ -117,15 +120,16 @@ class CJFramework_Site_Engine {
     }
 
     public function run($site_info) {
-        $controller = self::getClassName($site_info['REST'][1], CTRLR_PREFIX);
-        $action = self::getClassName($site_info['REST'][2], CTRLR_PREFIX);
+        $controller = self::getClassName($site_info['REST'][0][1], CTRLR_PREFIX);
+        $action = self::getClassName($site_info['REST'][0][2],ACTION_PREFFIX);
         
         //from now on ,the echo and any print out will be store in buffer 
         ob_start();
         /**
          * invoke the controller and view are here
          */
-        $controller->$action();
+        $controller_instance = $controller::Instance();
+        $controller_instance->$action();
         /**
          * TODO http request respon hearder is not slove.
          */
