@@ -8,6 +8,7 @@ include 'CJFrameworkModule.php';
 include 'CJFrameworkModel.php';
 include 'CJFrameworkCollection.php';
 include 'CJFrameworkPluginLoader.php';
+include 'CJThirdPartPluginConfig.php';
 
         /**
          * http header spell

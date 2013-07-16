@@ -2,8 +2,23 @@
 
 class CJPluginLoader {
     
-    public static function CJThirdPartPluginRegister($plugin_name){
-        include 'CJThirdPartPluginConfig.php';
+    /**
+     * inverted configure ,it is the cfg dictonary of key words
+     * @var type 
+     */
+    public static $inverted_cfg = null;
+    
+    /**
+     *
+     * @var type 
+     */
+    public static $cfg4loader = null;
+    
+    public static function CJThirdPartPluginRegister($classname){
+        
+        foreach (self::$cfg4loader as $key => $value) {
+            
+        }
         
     }
     
