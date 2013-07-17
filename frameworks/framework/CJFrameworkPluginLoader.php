@@ -15,9 +15,11 @@ class CJPluginLoader {
     public static $cfg4loader = null;
     
     public static function CJThirdPartPluginRegister($classname){
-        
-        foreach (self::$cfg4loader as $key => $value) {
-            
+        $invertedName = '';
+        if($invertedName = self::$inverted_cfg[$classname]){
+            foreach (self::$cfg4loader[$invertedName] as $key => $value) {
+                include THIRD_PART_ROOT . DIRECTORY_SEPARATOR . $key;
+            }
         }
         
     }
