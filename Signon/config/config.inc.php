@@ -11,7 +11,7 @@ include 'common.inc.php';
 $server_cfg['database']['master'] = array(
     'type' => MYSQL,
     'username' => 'root',
-    'password' => 'root',
+    'password' => 'onesy6',
     'port' => '3306',
     'db' => 'signon',
     'host' => '127.0.0.1',

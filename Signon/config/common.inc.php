@@ -23,6 +23,7 @@ define('FRAMEWORK_ROOT', PROJECT_ROOT . DIRECTORY_SEPARATOR . 'frameworks' . DIR
 define('THIRD_PART_ROOT', FRAMEWORK_ROOT . DIRECTORY_SEPARATOR . '..'. DIRECTORY_SEPARATOR . 'ThirdPartPlugin');
 define('VIEWS_ROOT', APP_ROOT . DIRECTORY_SEPARATOR . 'Site' . DIRECTORY_SEPARATOR . 'Views');
 define('PAGE_PLUGIN_ROOT',APP_ROOT . DIRECTORY_SEPARATOR . 'Site' . DIRECTORY_SEPARATOR . 'Plugins');
+define('RESOURCES_ROOT', '/Site/Resources');
 //define database type
 define('MYSQL', 'mysql');
 define('MSSQL', 'mssql');

@@ -25,7 +25,8 @@ final class CJFrameworkDB {
     }
     
     private function __construct() {
-        self::$master = new PDO(
+        try {
+            self::$master = new PDO(
                 MYSQL . ":host=" . self::$server_cfg['database']['master']['host'] 
                 . ";port=" . self::$server_cfg['database']['master']['port'] 
                 . ";dbname=" . self::$server_cfg['database']['master']['db'] . ";"
@@ -41,6 +42,10 @@ final class CJFrameworkDB {
                 , self::$server_cfg['database']['master']['password'], array(
             PDO::ATTR_PERSISTENT => true,
         ));
+        } catch (PDOException $exc) {
+            echo $exc->getTraceAsString();
+            exit;
+        }
         if(!self::$master){
             throw new Exception('master connection failed!');
         }
