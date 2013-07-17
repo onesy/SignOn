@@ -73,7 +73,7 @@ class CJPluginLoader {
      */
     public static function CJResourceFileOnCDN($step1Path, $isOnCDN){
         
-        $relativeLocation = SITE_FULL_NAME . RESOURCES_ROOT . DIRECTORY_SEPARATOR . $step1Path;
+        $relativeLocation = RESOURCES_ROOT . DIRECTORY_SEPARATOR . $step1Path;
         
         if($isOnCDN){
             /**

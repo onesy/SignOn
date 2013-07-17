@@ -18,6 +18,7 @@
         <?php echo 'boy`s name is ' . $store['name4boy']; ?><br/>
         <?php echo 'girl`s name is ' . $store['name4girl']; ?><br/>
         <img src="<?php echo CJPluginLoader::CJResourceFile('test.jpg', false);?>" alt="苍老师" />
+        <img src="<?php echo CJPluginLoader::CJResourceFile('test2.jpg', false);?>" alt="苍老师" />
     </body>
 
 </html>
