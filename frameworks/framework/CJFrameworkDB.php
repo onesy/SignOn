@@ -107,6 +107,7 @@ final class CJFrameworkDB {
     
     public function query($sql){
         $dbConn = null;
+        $rows = false;
         if(is_null($sql) || $this->masterOrSlave == -1){
            return null; 
         }
@@ -118,7 +119,9 @@ final class CJFrameworkDB {
             $dbConn = self::$slave;
         }
         $result = $dbConn->query($sql);
-        $rows = $result->fetch();
+        if($result){
+            $rows = $result->fetch();
+        }
         return $rows;
     }
     
