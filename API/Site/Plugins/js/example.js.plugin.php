@@ -1,0 +1,1 @@
+<script type="text/javascript" src="<?php echo CJPluginLoader::CJResourceFile('test.js', false);?>" ></script>
