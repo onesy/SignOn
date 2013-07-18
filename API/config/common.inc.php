@@ -12,7 +12,7 @@ include 'IpList.inc.php';
  */
 define('SITE_PROTOCAL_PREFIX', 'http://');
 define('DOMAIN','cosjidev.com');
-define('SITE_NAME', 'modile_api.'.DOMAIN);
+define('SITE_NAME', 'api.'.DOMAIN);
 define('SITE_FULL_NAME',SITE_PROTOCAL_PREFIX . SITE_NAME);
 // project root is the top of the program, SignonCosji folder
 define('PROJECT_ROOT', dirname(dirname(dirname(__FILE__))));
