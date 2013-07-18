@@ -16,6 +16,15 @@ include PROJECT_ROOT . DIRECTORY_SEPARATOR
         . "framework" . DIRECTORY_SEPARATOR . "CJFramework.php";
 //echo PROJECT_ROOT;
 
+/**
+ * request path and switch configure
+ * 
+ */
+$site_info['rule_map'] = array(
+    'test/test' => true,
+    'shengz/shengz' => true,
+    'shengz/cosji' => true,
+);
 
 CJFrameworkDB::setServer_cfg($server_cfg);
 $siteEngine = CJFramework_Site_Engine::Instance();

@@ -60,6 +60,11 @@ function __autoload($classname) {
         include_once COMMONS_ROOT . DIRECTORY_SEPARATOR . "Collection" .
                 DIRECTORY_SEPARATOR . $classRealName . '.class.php';
     }
+    
+    /**
+     * third party plugin 
+     */
+    CJPluginLoader::CJThirdPartPluginLoad($classname);
 }
 
 /**
@@ -67,7 +72,19 @@ function __autoload($classname) {
  */
 $site_info = array();
 global $site_info;
+/**
+ * 如果_rp_不存在，那么就说明一个问题，这个请求很可能是直接请求的实体文件
+ * 这样的请求应该被304回去
+ */
 
+if(!array_key_exists('_rp_', $_REQUEST)){
+    header('HTTP/1.1 403 Forbidden');
+    header("status: 403 Forbidden");
+    exit;
+}
+/**
+ * 存在_rp_参数的才是被nginx转发之后的请求
+ */
 $site_info['_rp_'] = str_replace(".html", "", $_REQUEST['_rp_']);
 $site_info['REST'] = array(array_filter(explode("/", $site_info['_rp_'])));
 
@@ -116,7 +133,7 @@ class CJFramework_Site_Engine {
         return self::$siteEngine;
     }
     
-    public function setViewName($viewName = null){
+    public static function setViewName($viewName = null){
         if($viewName == null){
             $viewName = $site_info['REST'][0][2];
         }
@@ -128,7 +145,7 @@ class CJFramework_Site_Engine {
      * @param type $params
      * @return type
      */
-    public function setEngine($params) {
+    public static function setEngine($params) {
         if (!is_array($params) || empty($params))
             return;
         else {
@@ -141,15 +158,46 @@ class CJFramework_Site_Engine {
     }
 
     public function run($site_info) {
-        self::$site_info = $site_info;
-        $controller = self::getClassName($site_info['REST'][0][1], CTRLR_PREFIX);
-        $action = self::getClassName($site_info['REST'][0][2],ACTION_PREFFIX);
         
-        //from now on ,the echo and any print out will be store in buffer 
+        /**
+         * @todo 这个方法需要被重构
+         */
+        self::$site_info = $site_info;
+        $origin_controller_name = null;
+        if(!array_key_exists(1, $site_info['REST'][0])){
+            $site_info['REST'][0][1] = false;
+        }
+        if(!array_key_exists(2, $site_info['REST'][0])){
+            $site_info['REST'][0][2] =false;
+        }
+        $controller = self::getClassName($site_info['REST'][0][1], CTRLR_PREFIX);
+        $action = self::getClassName($site_info['REST'][0][2], ACTION_PREFFIX);
+        if((!$site_info['REST'][0][1] && !$site_info['REST'][0][2]) ||
+                (! $site_info['REST'][0][2] && ($site_info['REST'][0][1] == 'index'))){
+            $controller = self::getClassName('index', CTRLR_PREFIX);
+            $action = self::getClassName('index', ACTION_PREFFIX);
+            $origin_controller_name = 'index';
+            self::setViewName('index');
+        } elseif( ! array_key_exists($site_info['REST'][0][1] . '/' . $site_info['REST'][0][2], $site_info['rule_map'])) {
+            
+            header('HTTP/1.1 404 Not Found');
+            header("status: 404 Not Found");
+            return ;
+        } else {
+            /**
+             * 既然找的到路径，那么原始的控制器名字也是很重要的，因为查找模板所在的文件夹还要使用原始控制器名字
+             */
+            $origin_controller_name = $site_info['REST'][0][1];
+        }
+
+        // from now on ,the echo and any print out will be store in buffer 
         ob_start();
         /**
          * invoke the controller and view are here
          */
+        header('Location: ' . SITE_FULL_NAME . '/');
+        header('HTTP/1.1 200 OK');
+        header("status: 200 OK");
         header('Content-Type:text/html;charset=utf-8 ');
         $controller_instance = $controller::Instance();
         $controller_instance->$action();
@@ -159,9 +207,11 @@ class CJFramework_Site_Engine {
         
         /**
          * spelling the html page
+         * 7月19凌晨，增加一层区分模板的文件夹，因为这里的
          */
-        include_once VIEWS_ROOT . DIRECTORY_SEPARATOR . self::getPageTplName(self::$ViewName);
-        
+        // include_once VIEWS_ROOT . DIRECTORY_SEPARATOR . self::getPageTplName(self::$ViewName);
+        include_once VIEWS_ROOT . DIRECTORY_SEPARATOR . $origin_controller_name . 
+                DIRECTORY_SEPARATOR . self::getPageTplName(self::$ViewName);
         /**
          * flush content in buffer and close the buffer.
          */
@@ -172,7 +222,7 @@ class CJFramework_Site_Engine {
         return $prefix . $ctrlr_name;
     }
     
-    public static function getPageTplName($page_name){
+    public static function getPageTplName($page_name = null){
         if($page_name == null){
             $page_name = self::$site_info['REST'][0][2];
         }

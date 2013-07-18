@@ -27,7 +27,8 @@ class CJPluginLoader {
      */
     public static function CJThirdPartPluginLoad($classname){
         $invertedName = '';
-        if($invertedName = self::$inverted_cfg[$classname]){
+        if(array_key_exists($classname, self::$inverted_cfg) 
+                && $invertedName = self::$inverted_cfg[$classname]){
             foreach (self::$cfg4loader[$invertedName] as $key => $value) {
                 include THIRD_PART_ROOT . DIRECTORY_SEPARATOR .$value . DIRECTORY_SEPARATOR . $key;
             }
