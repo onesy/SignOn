@@ -189,6 +189,10 @@ class CJFramework_Site_Engine {
              */
             $origin_controller_name = $site_info['REST'][0][1];
         }
+        $action_preffixed = $action;
+        if(array_key_exists('_ajax_', $_REQUEST) && $_REQUEST['_ajax_'] == 1){
+            $action = str_replace(ACTION_PREFFIX , AJAX_PREFFIX, $action);
+        }
 
         // from now on ,the echo and any print out will be store in buffer 
         ob_start();
@@ -208,10 +212,13 @@ class CJFramework_Site_Engine {
         /**
          * spelling the html page
          * 7月19凌晨，增加一层区分模板的文件夹，因为这里的
+         * 
          */
         // include_once VIEWS_ROOT . DIRECTORY_SEPARATOR . self::getPageTplName(self::$ViewName);
-        include_once VIEWS_ROOT . DIRECTORY_SEPARATOR . $origin_controller_name . 
-                DIRECTORY_SEPARATOR . self::getPageTplName(self::$ViewName);
+        if($action_preffixed == $action){//如果ajax的前缀没有被替换则说明是普通的action请求
+            include_once VIEWS_ROOT . DIRECTORY_SEPARATOR . $origin_controller_name . 
+                    DIRECTORY_SEPARATOR . self::getPageTplName(self::$ViewName);
+        }
         /**
          * flush content in buffer and close the buffer.
          */
