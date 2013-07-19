@@ -1,6 +1,7 @@
 <?php
 
 //echo 'load CJFramework';
+include 'CJRegister.php';
 include 'CJFrameworkDB.php';
 include 'CJFrameworkWeb.php';
 include 'CJFrameworkController.php';
@@ -9,6 +10,7 @@ include 'CJFrameworkModel.php';
 include 'CJFrameworkCollection.php';
 include 'CJFrameworkPluginLoader.php';
 include 'CJThirdPartPluginConfig.php';
+
 
         /**
          * http header spell
@@ -240,49 +242,4 @@ class CJFramework_Site_Engine {
         return $ctrlr_name . PAGE_PLUGIN_SUFFIX;
     }
 
-}
-
-class CJFramework_ReqRsP{
-    
-    public static function CJGetGetInt($name){
-        if(!is_numeric($_GET[$name])){
-            return false;
-        }
-        return (int)$_GET[$name];
-    }
-    
-    public static function CJGetGetVar($name){
-        return $_GET[$name];
-    }
-    
-    public static function CJGetPostInt($name){
-        if(!is_numeric($_POST[$name])){
-            return false;
-        }
-        return (int)$_POST[$name];
-    }
-    
-    public static function CJGetPostVar($name){
-        return $_POST[$name];
-    }
-    
-    public static function CJGetCookieInt($name){
-        if(!is_numeric($_COOKIE[$name])){
-            return false;
-        }
-        return (int)$_COOKIE[$name];
-    }
-    
-    public static function CJGetCookieVar($name){
-        return $_COOKIE[$name];
-    }
-    
-    public static function CJSetCookieVar($name, $value, $expire, $path=null, $domain = DOMAIN){
-        
-        if($expire ==0 || $expire == null)
-            throw new Exception ('set cookie operation, null $expire is not allowed!');
-        setcookie($name, $value, $expire, $path, $domain);
-        
-    }
-    
 }

@@ -22,6 +22,7 @@ include PROJECT_ROOT . DIRECTORY_SEPARATOR
  */
 $site_info['rule_map'] = array(
     'login/step1' => true,
+    'login/step2' => true,
 );
 
 CJFrameworkDB::setServer_cfg($server_cfg);
